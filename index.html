@@ -609,16 +609,21 @@ function saveVendo() {
   var btn = document.getElementById('vendo-save-btn');
   var msg = document.getElementById('vendo-save-msg');
   btn.disabled = true; btn.textContent = 'Saving...'; msg.style.display = 'none';
+  var vlanVal = document.getElementById('f-vendo-vlan').value.trim();
   var payload = {
-    vendo_name: name, host: host, contact_number: contact, address_installed: address,
+    vendo_name: name,
+    host: host,
+    contact_number: contact,
+    address_installed: address,
     gps: document.getElementById('f-vendo-gps').value.trim() || null,
-    vlan: document.getElementById('f-vendo-vlan').value.trim() || null,
     date_installed: document.getElementById('f-vendo-date').value || null,
     last_maintenance: document.getElementById('f-vendo-maint').value || null,
     status: document.getElementById('f-vendo-status').value
   };
+  if (vlanVal) payload.vlan = vlanVal;
+  console.log('Saving vendo:', JSON.stringify(payload));
   fetch(SUPABASE_URL + '/rest/v1/peso_wifi_vendo', { method: 'POST', headers: sbHeaders(), body: JSON.stringify(payload) })
-  .then(function(r){ if (!r.ok) throw new Error('Save failed (' + r.status + ')'); return r.json(); })
+  .then(function(r){ if (!r.ok) return r.json().then(function(e){ throw new Error('Save failed (' + r.status + '): ' + (e.message || e.hint || e.details || JSON.stringify(e))); }); return r.json(); })
   .then(function(saved){
     var rec = Array.isArray(saved) ? saved[0] : saved;
     localVendo.unshift(rec); filteredVendo = localVendo.slice(); renderVendo(filteredVendo); updateStats();
@@ -647,19 +652,21 @@ function saveSubs() {
     date_registered: document.getElementById('f-sub-registered').value || null
   };
   fetch(SUPABASE_URL + '/rest/v1/customer', { method: 'POST', headers: sbHeaders(), body: JSON.stringify(custPayload) })
-  .then(function(r){ if (!r.ok) throw new Error('Customer save failed (' + r.status + ')'); return r.json(); })
+  .then(function(r){ if (!r.ok) return r.json().then(function(e){ throw new Error('Customer save failed (' + r.status + '): ' + (e.message || e.hint || e.details || JSON.stringify(e))); }); return r.json(); })
   .then(function(saved){
     var cust = Array.isArray(saved) ? saved[0] : saved;
+    var subVlanVal = document.getElementById('f-sub-vlan').value.trim();
     var accPayload = {
       customer_id: cust.customer_id || cust.id,
       plan_id: parseInt(document.getElementById('f-sub-plan').value) || null,
       account_number: document.getElementById('f-sub-accnum').value.trim() || null,
-      vlan: document.getElementById('f-sub-vlan').value.trim() || null,
       account_status: document.getElementById('f-sub-status').value,
       date_activated: document.getElementById('f-sub-activated').value || null
     };
+    if (subVlanVal) accPayload.vlan = subVlanVal;
+    console.log('Saving subscriber account:', JSON.stringify(accPayload));
     return fetch(SUPABASE_URL + '/rest/v1/customer_accounts', { method: 'POST', headers: sbHeaders(), body: JSON.stringify(accPayload) })
-    .then(function(r2){ if (!r2.ok) throw new Error('Account save failed (' + r2.status + ')'); return r2.json(); })
+    .then(function(r2){ if (!r2.ok) return r2.json().then(function(e){ throw new Error('Account save failed (' + r2.status + '): ' + (e.message || e.hint || e.details || JSON.stringify(e))); }); return r2.json(); })
     .then(function(accSaved){
       var acc = Array.isArray(accSaved) ? accSaved[0] : accSaved;
       var merged = Object.assign({}, cust, acc);
