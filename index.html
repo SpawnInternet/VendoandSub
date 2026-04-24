@@ -13,9 +13,9 @@
   .login-logo { text-align: center; margin-bottom: 1.5rem; }
   .login-logo h1 { font-size: 22px; font-weight: 800; color: #1e3a5f; }
   .login-logo p { font-size: 12px; color: #a0aec0; margin-top: 4px; }
-  .login-card label { font-size: 12px; color: #718096; display: block; margin-bottom: 4px; margin-top: 14px; font-weight: 600; text-transform: uppercase; }
-  .login-card input { width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; }
-  .login-card input:focus { border-color: #2a5298; }
+  .lbl { font-size: 12px; color: #718096; display: block; margin-bottom: 4px; margin-top: 14px; font-weight: 600; text-transform: uppercase; }
+  .inp { width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; background: #fff; }
+  .inp:focus { border-color: #2a5298; }
   .login-btn { width: 100%; margin-top: 1.5rem; padding: 12px; background: #1e3a5f; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; }
   .login-btn:hover { background: #2a5298; }
   .login-error { color: #e53e3e; font-size: 13px; text-align: center; margin-top: 10px; display: none; }
@@ -31,33 +31,34 @@
   .stat-label { font-size: 11px; color: #718096; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
   .stat-val { font-size: 28px; font-weight: 700; color: #1e3a5f; }
   .stat-sub { font-size: 12px; color: #a0aec0; margin-top: 2px; }
-  .tabs { display: flex; gap: 4px; }
-  .tab { padding: 10px 24px; border-radius: 8px 8px 0 0; border: 1px solid #e2e8f0; border-bottom: none; background: #e2e8f0; cursor: pointer; font-size: 14px; font-weight: 600; color: #4a5568; }
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .tab { padding: 10px 22px; border-radius: 8px 8px 0 0; border: 1px solid #e2e8f0; border-bottom: none; background: #e2e8f0; cursor: pointer; font-size: 14px; font-weight: 600; color: #4a5568; }
   .tab.active { background: #fff; color: #1e3a5f; }
   .panel { background: #fff; border-radius: 0 10px 10px 10px; border: 1px solid #e2e8f0; padding: 1.25rem; }
   .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
-  .toolbar input { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; width: 260px; }
+  .toolbar input { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; width: 240px; }
   .toolbar select { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; background: #fff; }
   .count-label { font-size: 13px; color: #718096; margin-left: auto; }
-  .tbl-wrap { overflow-x: auto; max-height: 520px; overflow-y: auto; }
+  .tbl-wrap { overflow-x: auto; max-height: 500px; overflow-y: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   thead th { background: #1e3a5f; color: #fff; padding: 10px 12px; text-align: left; position: sticky; top: 0; z-index: 2; white-space: nowrap; font-weight: 600; }
   tbody tr { border-bottom: 1px solid #f0f4f8; cursor: pointer; transition: background 0.1s; }
   tbody tr:hover { background: #ebf4ff; }
-  tbody td { padding: 9px 12px; vertical-align: middle; white-space: nowrap; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+  tbody td { padding: 9px 12px; vertical-align: middle; white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
   .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
   .badge-active { background: #c6f6d5; color: #276749; }
   .badge-inactive { background: #fed7d7; color: #9b2c2c; }
   .no-results { text-align: center; color: #a0aec0; padding: 2rem; font-size: 14px; }
   .btn-export { padding: 7px 14px; background: #276749; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .btn-add { padding: 7px 14px; background: #2a5298; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
   .hint { font-size: 12px; color: #a0aec0; font-style: italic; }
 
   /* MODAL */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem; }
   .modal { background: #fff; border-radius: 16px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0,0,0,0.3); }
-  .modal-header { background: #1e3a5f; color: #fff; padding: 1.25rem 1.5rem; border-radius: 16px 16px 0 0; display: flex; align-items: center; justify-content: space-between; }
+  .modal-header { background: #1e3a5f; color: #fff; padding: 1.25rem 1.5rem; border-radius: 16px 16px 0 0; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 2; }
   .modal-header h2 { font-size: 16px; font-weight: 700; }
-  .modal-close { background: rgba(255,255,255,0.2); border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .modal-close { background: rgba(255,255,255,0.2); border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; font-size: 16px; cursor: pointer; }
   .modal-close:hover { background: rgba(255,255,255,0.35); }
   .modal-body { padding: 1.25rem 1.5rem; }
   .detail-row { display: flex; align-items: flex-start; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f4f8; gap: 12px; }
@@ -69,6 +70,17 @@
   .gps-link { color: #2b6cb0; text-decoration: none; font-size: 13px; }
   .gps-link:hover { text-decoration: underline; }
   .modal-badge { display: inline-block; padding: 3px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 1rem; }
+
+  /* FORM MODAL */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .form-grid .full { grid-column: 1 / -1; }
+  .form-actions { display: flex; gap: 10px; margin-top: 1.5rem; justify-content: flex-end; }
+  .btn-save { padding: 10px 24px; background: #1e3a5f; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-cancel { padding: 10px 20px; background: #edf2f7; color: #4a5568; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .save-msg { font-size: 13px; margin-top: 10px; text-align: center; display: none; }
+  .save-ok { color: #276749; }
+  .save-err { color: #e53e3e; }
 </style>
 </head>
 <body>
@@ -79,10 +91,10 @@
       <h1>SPAWN INTERNET</h1>
       <p>Data Report Portal</p>
     </div>
-    <label>Username</label>
-    <input type="text" id="inp-user" placeholder="Enter username" />
-    <label>Password</label>
-    <input type="password" id="inp-pass" placeholder="Enter password" />
+    <label class="lbl">Username</label>
+    <input class="inp" type="text" id="inp-user" placeholder="Enter username" />
+    <label class="lbl">Password</label>
+    <input class="inp" type="password" id="inp-pass" placeholder="Enter password" />
     <button class="login-btn" id="login-btn">Login</button>
     <div class="login-error" id="login-error">Invalid username or password.</div>
   </div>
@@ -99,25 +111,25 @@
   </header>
   <div class="main">
     <div class="stats-grid">
-      <div class="stat"><div class="stat-label">Total Vendos</div><div class="stat-val">856</div><div class="stat-sub">853 Active &bull; 3 Inactive</div></div>
-      <div class="stat"><div class="stat-label">Total Subscribers</div><div class="stat-val">318</div><div class="stat-sub">313 Active &bull; 5 Inactive</div></div>
-      <div class="stat"><div class="stat-label">Active Vendos</div><div class="stat-val" style="color:#276749">853</div><div class="stat-sub">99.6% uptime</div></div>
-      <div class="stat"><div class="stat-label">Active Subscribers</div><div class="stat-val" style="color:#276749">313</div><div class="stat-sub">98.4% retention</div></div>
+      <div class="stat"><div class="stat-label">Total Vendos</div><div class="stat-val" id="stat-vendo-total">856</div><div class="stat-sub" id="stat-vendo-sub">853 Active &bull; 3 Inactive</div></div>
+      <div class="stat"><div class="stat-label">Total Subscribers</div><div class="stat-val" id="stat-subs-total">318</div><div class="stat-sub" id="stat-subs-sub">313 Active &bull; 5 Inactive</div></div>
+      <div class="stat"><div class="stat-label">Active Vendos</div><div class="stat-val" id="stat-vendo-active" style="color:#276749">853</div><div class="stat-sub">uptime</div></div>
+      <div class="stat"><div class="stat-label">Active Subscribers</div><div class="stat-val" id="stat-subs-active" style="color:#276749">313</div><div class="stat-sub">retention</div></div>
     </div>
     <div class="tabs">
       <div class="tab active" id="tab-btn-vendo">&#127975; Vendo Machines</div>
       <div class="tab" id="tab-btn-subs">&#128101; Subscribers</div>
     </div>
 
-    <!-- VENDO -->
     <div class="panel" id="tab-vendo">
       <div class="toolbar">
-        <input type="text" id="vendo-search" placeholder="Search vendo name, host, address..." />
+        <input type="text" id="vendo-search" placeholder="Search name, host, address..." />
         <select id="vendo-status">
           <option value="">All Status</option>
           <option value="Active">Active</option>
           <option value="Inactive">Inactive</option>
         </select>
+        <button class="btn-add" id="vendo-add-btn">+ Add Vendo</button>
         <button class="btn-export" id="vendo-export">Export CSV</button>
         <span class="count-label" id="vendo-count">856 records</span>
       </div>
@@ -129,15 +141,15 @@
       </div>
     </div>
 
-    <!-- SUBSCRIBERS -->
     <div class="panel" id="tab-subs" style="display:none;">
       <div class="toolbar">
-        <input type="text" id="subs-search" placeholder="Search name, address, phone, email..." />
+        <input type="text" id="subs-search" placeholder="Search name, phone, email..." />
         <select id="subs-status">
           <option value="">All Status</option>
           <option value="Active">Active</option>
           <option value="Inactive">Inactive</option>
         </select>
+        <button class="btn-add" id="subs-add-btn">+ Add Subscriber</button>
         <button class="btn-export" id="subs-export">Export CSV</button>
         <span class="count-label" id="subs-count">318 records</span>
       </div>
@@ -151,21 +163,150 @@
   </div>
 </div>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modal" style="display:none;" onclick="closeModal(event)">
-  <div class="modal" id="modal-box">
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal" style="display:none;" onclick="closeModal('detail-modal',event)">
+  <div class="modal">
     <div class="modal-header">
       <h2 id="modal-title">Details</h2>
-      <button class="modal-close" onclick="document.getElementById('modal').style.display='none'">&#10005;</button>
+      <button class="modal-close" onclick="document.getElementById('detail-modal').style.display='none'">&#10005;</button>
     </div>
     <div class="modal-body" id="modal-body"></div>
   </div>
 </div>
 
+<!-- ADD VENDO MODAL -->
+<div class="modal-overlay" id="vendo-form-modal" style="display:none;" onclick="closeModal('vendo-form-modal',event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Add New Vendo</h2>
+      <button class="modal-close" onclick="document.getElementById('vendo-form-modal').style.display='none'">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="full">
+          <label class="lbl">Vendo Name *</label>
+          <input class="inp" id="f-vendo-name" placeholder="e.g. Vendo Wifi : 0100 || Server : 1" />
+        </div>
+        <div>
+          <label class="lbl">Host Name *</label>
+          <input class="inp" id="f-vendo-host" placeholder="Full name of host" />
+        </div>
+        <div>
+          <label class="lbl">Contact Number *</label>
+          <input class="inp" id="f-vendo-contact" placeholder="09XXXXXXXXX" />
+        </div>
+        <div class="full">
+          <label class="lbl">Address Installed *</label>
+          <input class="inp" id="f-vendo-address" placeholder="Complete address" />
+        </div>
+        <div>
+          <label class="lbl">GPS Coordinates</label>
+          <input class="inp" id="f-vendo-gps" placeholder="e.g. 8.7025, 123.3905" />
+        </div>
+        <div>
+          <label class="lbl">Date Installed</label>
+          <input class="inp" type="date" id="f-vendo-date" />
+        </div>
+        <div>
+          <label class="lbl">Last Maintenance</label>
+          <input class="inp" type="date" id="f-vendo-maint" />
+        </div>
+        <div>
+          <label class="lbl">Status</label>
+          <select class="inp" id="f-vendo-status">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="document.getElementById('vendo-form-modal').style.display='none'">Cancel</button>
+        <button class="btn-save" id="vendo-save-btn">Save Vendo</button>
+      </div>
+      <div class="save-msg" id="vendo-save-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD SUBSCRIBER MODAL -->
+<div class="modal-overlay" id="subs-form-modal" style="display:none;" onclick="closeModal('subs-form-modal',event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Add New Subscriber</h2>
+      <button class="modal-close" onclick="document.getElementById('subs-form-modal').style.display='none'">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div>
+          <label class="lbl">First Name *</label>
+          <input class="inp" id="f-sub-first" placeholder="First name" />
+        </div>
+        <div>
+          <label class="lbl">Middle Name</label>
+          <input class="inp" id="f-sub-middle" placeholder="Middle name" />
+        </div>
+        <div>
+          <label class="lbl">Last Name *</label>
+          <input class="inp" id="f-sub-last" placeholder="Last name" />
+        </div>
+        <div>
+          <label class="lbl">Phone Number *</label>
+          <input class="inp" id="f-sub-phone" placeholder="09XXXXXXXXX" />
+        </div>
+        <div class="full">
+          <label class="lbl">Email / FB</label>
+          <input class="inp" id="f-sub-email" placeholder="Email or FB name" />
+        </div>
+        <div class="full">
+          <label class="lbl">Address *</label>
+          <input class="inp" id="f-sub-address" placeholder="Complete address" />
+        </div>
+        <div>
+          <label class="lbl">Birthday</label>
+          <input class="inp" type="date" id="f-sub-bday" />
+        </div>
+        <div>
+          <label class="lbl">Plan ID</label>
+          <input class="inp" id="f-sub-plan" placeholder="e.g. 21" />
+        </div>
+        <div>
+          <label class="lbl">Account Number</label>
+          <input class="inp" id="f-sub-accnum" placeholder="e.g. 202509-0001" />
+        </div>
+        <div>
+          <label class="lbl">Account Status</label>
+          <select class="inp" id="f-sub-status">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Date Activated</label>
+          <input class="inp" type="date" id="f-sub-activated" />
+        </div>
+        <div>
+          <label class="lbl">Date Registered</label>
+          <input class="inp" type="date" id="f-sub-registered" />
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="document.getElementById('subs-form-modal').style.display='none'">Cancel</button>
+        <button class="btn-save" id="subs-save-btn">Save Subscriber</button>
+      </div>
+      <div class="save-msg" id="subs-save-msg"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 var USERS = {"admin": "1"};
-var filteredVendo = [];
-var filteredSubs = [];
+var SUPABASE_URL = "https://njfmlwigqnamvqxhitxt.supabase.co";
+var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qZm1sd2lncW5hbXZxeGhpdHh0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NzA1MzY3NywiZXhwIjoyMDgyNjI5Njc3fQ.ZSC_wVGU8O6bPWefpwUR0HxeHudqpedrjnTPJDJVgpg";
+
+var localVendo = vendoData.slice();
+var localSubs = subsData.slice();
+var filteredVendo = localVendo.slice();
+var filteredSubs = localSubs.slice();
 
 function esc(s) {
   if (!s) return '';
@@ -187,10 +328,10 @@ function doCopy(btn) {
   });
 }
 
-function detailRow(label, value, isCopyable) {
+function detailRow(label, value, copyable) {
   if (!value) return '';
-  var copyBtn = isCopyable ? '<button class="copy-btn" data-val="' + esc(value) + '" onclick="doCopy(this)">Copy</button>' : '';
-  return '<div class="detail-row"><span class="detail-label">' + label + '</span><span class="detail-value">' + esc(value) + copyBtn + '</span></div>';
+  var cp = copyable ? '<button class="copy-btn" data-val="' + esc(value) + '" onclick="doCopy(this)">Copy</button>' : '';
+  return '<div class="detail-row"><span class="detail-label">' + label + '</span><span class="detail-value">' + esc(value) + cp + '</span></div>';
 }
 
 function gpsRow(gps) {
@@ -199,11 +340,14 @@ function gpsRow(gps) {
   var link = parts.length === 2
     ? '<a class="gps-link" href="https://maps.google.com/?q=' + encodeURIComponent(gps) + '" target="_blank">&#128205; ' + esc(gps) + '</a>'
     : esc(gps);
-  var copyBtn = '<button class="copy-btn" data-val="' + esc(gps) + '" onclick="doCopy(this)">Copy</button>';
-  return '<div class="detail-row"><span class="detail-label">GPS</span><span class="detail-value">' + link + copyBtn + '</span></div>';
+  return '<div class="detail-row"><span class="detail-label">GPS</span><span class="detail-value">' + link + '<button class="copy-btn" data-val="' + esc(gps) + '" onclick="doCopy(this)">Copy</button></span></div>';
 }
 
-function openVendoModal(idx) {
+function closeModal(id, e) {
+  if (e.target === document.getElementById(id)) document.getElementById(id).style.display = 'none';
+}
+
+function openVendoDetail(idx) {
   var r = filteredVendo[idx];
   var statusCls = r.status === 'Active' ? 'badge-active' : 'badge-inactive';
   var html = '<span class="modal-badge ' + statusCls + '">' + esc(r.status) + '</span>';
@@ -216,10 +360,10 @@ function openVendoModal(idx) {
   html += detailRow('Last Maintenance', r.last_maintenance, false);
   document.getElementById('modal-title').textContent = r.vendo_name || 'Vendo Details';
   document.getElementById('modal-body').innerHTML = html;
-  document.getElementById('modal').style.display = 'flex';
+  document.getElementById('detail-modal').style.display = 'flex';
 }
 
-function openSubsModal(idx) {
+function openSubsDetail(idx) {
   var r = filteredSubs[idx];
   var name = [r.first_name, r.middle_name, r.last_name].filter(Boolean).join(' ').trim();
   var statusCls = r.account_status === 'Active' ? 'badge-active' : 'badge-inactive';
@@ -232,16 +376,22 @@ function openSubsModal(idx) {
   html += detailRow('Plan ID', r.plan_id, false);
   html += detailRow('Date Activated', r.date_activated, false);
   html += detailRow('Date Registered', r.date_registered, false);
-  html += detailRow('Date Disconnected', r.date_disconnected, false);
   document.getElementById('modal-title').textContent = name || 'Subscriber Details';
   document.getElementById('modal-body').innerHTML = html;
-  document.getElementById('modal').style.display = 'flex';
+  document.getElementById('detail-modal').style.display = 'flex';
 }
 
-function closeModal(e) {
-  if (e.target === document.getElementById('modal')) {
-    document.getElementById('modal').style.display = 'none';
-  }
+function updateStats() {
+  var va = localVendo.filter(function(r){ return r.status === 'Active'; }).length;
+  var vi = localVendo.length - va;
+  var sa = localSubs.filter(function(r){ return r.account_status === 'Active'; }).length;
+  var si = localSubs.length - sa;
+  document.getElementById('stat-vendo-total').textContent = localVendo.length;
+  document.getElementById('stat-vendo-sub').textContent = va + ' Active \u2022 ' + vi + ' Inactive';
+  document.getElementById('stat-vendo-active').textContent = va;
+  document.getElementById('stat-subs-total').textContent = localSubs.length;
+  document.getElementById('stat-subs-sub').textContent = sa + ' Active \u2022 ' + si + ' Inactive';
+  document.getElementById('stat-subs-active').textContent = sa;
 }
 
 function renderVendo(data) {
@@ -250,7 +400,7 @@ function renderVendo(data) {
   var rows = '';
   for (var i = 0; i < data.length; i++) {
     var r = data[i];
-    rows += '<tr onclick="openVendoModal(' + i + ')">' +
+    rows += '<tr onclick="openVendoDetail(' + i + ')">' +
       '<td style="color:#a0aec0">' + (i+1) + '</td>' +
       '<td style="font-weight:600;color:#1e3a5f">' + esc(r.vendo_name) + '</td>' +
       '<td>' + esc(r.host) + '</td>' +
@@ -270,7 +420,7 @@ function renderSubs(data) {
   for (var i = 0; i < data.length; i++) {
     var r = data[i];
     var name = [r.first_name, r.middle_name, r.last_name].filter(Boolean).join(' ').trim();
-    rows += '<tr onclick="openSubsModal(' + i + ')">' +
+    rows += '<tr onclick="openSubsDetail(' + i + ')">' +
       '<td style="color:#a0aec0">' + (i+1) + '</td>' +
       '<td style="font-weight:600">' + esc(r.account_number) + '</td>' +
       '<td>' + esc(name) + '</td>' +
@@ -286,7 +436,7 @@ function renderSubs(data) {
 function filterVendo() {
   var q = document.getElementById('vendo-search').value.toLowerCase();
   var st = document.getElementById('vendo-status').value;
-  filteredVendo = vendoData.filter(function(r) {
+  filteredVendo = localVendo.filter(function(r) {
     var match = !q || [r.vendo_name,r.host,r.contact_number,r.address_installed].join(' ').toLowerCase().indexOf(q) >= 0;
     return match && (!st || r.status === st);
   });
@@ -296,7 +446,7 @@ function filterVendo() {
 function filterSubs() {
   var q = document.getElementById('subs-search').value.toLowerCase();
   var st = document.getElementById('subs-status').value;
-  filteredSubs = subsData.filter(function(r) {
+  filteredSubs = localSubs.filter(function(r) {
     var name = [r.first_name,r.middle_name,r.last_name].join(' ');
     var match = !q || [name,r.phone_number,r.email,r.address,r.account_number].join(' ').toLowerCase().indexOf(q) >= 0;
     return match && (!st || r.account_status === st);
@@ -319,9 +469,117 @@ function exportCSV(type) {
   a.click();
 }
 
+function sbHeaders() {
+  return { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+}
+
+function saveVendo() {
+  var name = document.getElementById('f-vendo-name').value.trim();
+  var host = document.getElementById('f-vendo-host').value.trim();
+  var contact = document.getElementById('f-vendo-contact').value.trim();
+  var address = document.getElementById('f-vendo-address').value.trim();
+  if (!name || !host || !contact || !address) { alert('Please fill in all required fields (*).'); return; }
+
+  var btn = document.getElementById('vendo-save-btn');
+  var msg = document.getElementById('vendo-save-msg');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  msg.style.display = 'none';
+
+  var payload = {
+    vendo_name: name,
+    host: host,
+    contact_number: contact,
+    address_installed: address,
+    gps: document.getElementById('f-vendo-gps').value.trim() || null,
+    date_installed: document.getElementById('f-vendo-date').value || null,
+    last_maintenance: document.getElementById('f-vendo-maint').value || null,
+    status: document.getElementById('f-vendo-status').value
+  };
+
+  fetch(SUPABASE_URL + '/rest/v1/peso_wifi_vendo', {
+    method: 'POST', headers: sbHeaders(), body: JSON.stringify(payload)
+  }).then(function(r) {
+    if (!r.ok) throw new Error('Save failed (status ' + r.status + ')');
+    return r.json();
+  }).then(function(saved) {
+    var rec = Array.isArray(saved) ? saved[0] : saved;
+    localVendo.unshift(rec);
+    filteredVendo = localVendo.slice();
+    renderVendo(filteredVendo);
+    updateStats();
+    msg.className = 'save-msg save-ok'; msg.textContent = 'Vendo saved successfully!'; msg.style.display = 'block';
+    ['f-vendo-name','f-vendo-host','f-vendo-contact','f-vendo-address','f-vendo-gps','f-vendo-date','f-vendo-maint'].forEach(function(id){ document.getElementById(id).value = ''; });
+    setTimeout(function(){ document.getElementById('vendo-form-modal').style.display='none'; msg.style.display='none'; }, 1500);
+  }).catch(function(e) {
+    msg.className = 'save-msg save-err'; msg.textContent = 'Error: ' + e.message; msg.style.display = 'block';
+  }).finally(function() {
+    btn.disabled = false; btn.textContent = 'Save Vendo';
+  });
+}
+
+function saveSubs() {
+  var first = document.getElementById('f-sub-first').value.trim();
+  var last = document.getElementById('f-sub-last').value.trim();
+  var phone = document.getElementById('f-sub-phone').value.trim();
+  var address = document.getElementById('f-sub-address').value.trim();
+  if (!first || !last || !phone || !address) { alert('Please fill in all required fields (*).'); return; }
+
+  var btn = document.getElementById('subs-save-btn');
+  var msg = document.getElementById('subs-save-msg');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  msg.style.display = 'none';
+
+  var custPayload = {
+    first_name: first,
+    middle_name: document.getElementById('f-sub-middle').value.trim() || null,
+    last_name: last,
+    phone_number: phone,
+    email: document.getElementById('f-sub-email').value.trim() || null,
+    address: address,
+    birthday: document.getElementById('f-sub-bday').value || null,
+    date_registered: document.getElementById('f-sub-registered').value || null
+  };
+
+  fetch(SUPABASE_URL + '/rest/v1/customer', {
+    method: 'POST', headers: sbHeaders(), body: JSON.stringify(custPayload)
+  }).then(function(r) {
+    if (!r.ok) throw new Error('Customer save failed (status ' + r.status + ')');
+    return r.json();
+  }).then(function(saved) {
+    var cust = Array.isArray(saved) ? saved[0] : saved;
+    var accPayload = {
+      customer_id: cust.customer_id || cust.id,
+      plan_id: parseInt(document.getElementById('f-sub-plan').value) || null,
+      account_number: document.getElementById('f-sub-accnum').value.trim() || null,
+      account_status: document.getElementById('f-sub-status').value,
+      date_activated: document.getElementById('f-sub-activated').value || null
+    };
+    return fetch(SUPABASE_URL + '/rest/v1/customer_accounts', {
+      method: 'POST', headers: sbHeaders(), body: JSON.stringify(accPayload)
+    }).then(function(r2) {
+      if (!r2.ok) throw new Error('Account save failed (status ' + r2.status + ')');
+      return r2.json();
+    }).then(function(accSaved) {
+      var acc = Array.isArray(accSaved) ? accSaved[0] : accSaved;
+      var merged = Object.assign({}, cust, acc);
+      localSubs.unshift(merged);
+      filteredSubs = localSubs.slice();
+      renderSubs(filteredSubs);
+      updateStats();
+      msg.className = 'save-msg save-ok'; msg.textContent = 'Subscriber saved successfully!'; msg.style.display = 'block';
+      ['f-sub-first','f-sub-middle','f-sub-last','f-sub-phone','f-sub-email','f-sub-address','f-sub-bday','f-sub-plan','f-sub-accnum','f-sub-activated','f-sub-registered'].forEach(function(id){ document.getElementById(id).value = ''; });
+      setTimeout(function(){ document.getElementById('subs-form-modal').style.display='none'; msg.style.display='none'; }, 1500);
+    });
+  }).catch(function(e) {
+    msg.className = 'save-msg save-err'; msg.textContent = 'Error: ' + e.message; msg.style.display = 'block';
+  }).finally(function() {
+    btn.disabled = false; btn.textContent = 'Save Subscriber';
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-  filteredVendo = vendoData.slice();
-  filteredSubs = subsData.slice();
+  filteredVendo = localVendo.slice();
+  filteredSubs = localSubs.slice();
 
   document.getElementById('login-btn').addEventListener('click', function() {
     var u = document.getElementById('inp-user').value.trim();
@@ -333,6 +591,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('login-error').style.display = 'none';
       renderVendo(filteredVendo);
       renderSubs(filteredSubs);
+      updateStats();
     } else {
       document.getElementById('login-error').style.display = 'block';
       document.getElementById('inp-pass').value = '';
@@ -340,8 +599,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  document.getElementById('inp-pass').addEventListener('keydown', function(e) { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
-  document.getElementById('inp-user').addEventListener('keydown', function(e) { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
+  document.getElementById('inp-pass').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('login-btn').click(); });
+  document.getElementById('inp-user').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('login-btn').click(); });
   document.getElementById('logout-btn').addEventListener('click', function() {
     document.getElementById('app-screen').style.display = 'none';
     document.getElementById('login-screen').style.display = 'flex';
@@ -364,12 +623,13 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('vendo-status').addEventListener('change', filterVendo);
   document.getElementById('subs-search').addEventListener('input', filterSubs);
   document.getElementById('subs-status').addEventListener('change', filterSubs);
-  document.getElementById('vendo-export').addEventListener('click', function() { exportCSV('vendo'); });
-  document.getElementById('subs-export').addEventListener('click', function() { exportCSV('subs'); });
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') document.getElementById('modal').style.display = 'none';
-  });
+  document.getElementById('vendo-export').addEventListener('click', function(){ exportCSV('vendo'); });
+  document.getElementById('subs-export').addEventListener('click', function(){ exportCSV('subs'); });
+  document.getElementById('vendo-add-btn').addEventListener('click', function(){ document.getElementById('vendo-form-modal').style.display='flex'; });
+  document.getElementById('subs-add-btn').addEventListener('click', function(){ document.getElementById('subs-form-modal').style.display='flex'; });
+  document.getElementById('vendo-save-btn').addEventListener('click', saveVendo);
+  document.getElementById('subs-save-btn').addEventListener('click', saveSubs);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ document.getElementById('detail-modal').style.display='none'; document.getElementById('vendo-form-modal').style.display='none'; document.getElementById('subs-form-modal').style.display='none'; } });
 });
 </script>
 </body>
