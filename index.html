@@ -70,6 +70,17 @@
   .gps-link { color: #2b6cb0; text-decoration: none; font-size: 13px; }
   .gps-link:hover { text-decoration: underline; }
   .modal-badge { display: inline-block; padding: 3px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 1rem; }
+  .modal-footer { display: flex; justify-content: flex-end; padding: 1rem 1.5rem; border-top: 1px solid #f0f4f8; }
+  .btn-delete { padding: 9px 20px; background: #fff; color: #e53e3e; border: 1.5px solid #e53e3e; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .btn-delete:hover { background: #fff5f5; }
+  .confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 200; }
+  .confirm-box { background: #fff; border-radius: 14px; padding: 2rem; max-width: 360px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .confirm-box h3 { font-size: 17px; color: #1a202c; margin-bottom: 0.5rem; }
+  .confirm-box p { font-size: 13px; color: #718096; margin-bottom: 1.5rem; }
+  .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+  .btn-confirm-del { padding: 10px 24px; background: #e53e3e; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .btn-confirm-del:hover { background: #c53030; }
+  .btn-confirm-cancel { padding: 10px 20px; background: #edf2f7; color: #4a5568; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
 
   /* FORM MODAL */
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
@@ -171,6 +182,21 @@
       <button class="modal-close" onclick="document.getElementById('detail-modal').style.display='none'">&#10005;</button>
     </div>
     <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn-delete" id="detail-delete-btn">&#128465; Delete Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE DIALOG -->
+<div class="confirm-overlay" id="confirm-overlay" style="display:none;">
+  <div class="confirm-box">
+    <h3>&#128465; Delete Record?</h3>
+    <p id="confirm-msg">This action cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn-confirm-cancel" onclick="document.getElementById('confirm-overlay').style.display='none'">Cancel</button>
+      <button class="btn-confirm-del" id="confirm-del-btn">Yes, Delete</button>
+    </div>
   </div>
 </div>
 
@@ -307,6 +333,8 @@ var localVendo = vendoData.slice();
 var localSubs = subsData.slice();
 var filteredVendo = localVendo.slice();
 var filteredSubs = localSubs.slice();
+var currentRecord = null;
+var currentType = null;
 
 function esc(s) {
   if (!s) return '';
@@ -349,6 +377,8 @@ function closeModal(id, e) {
 
 function openVendoDetail(idx) {
   var r = filteredVendo[idx];
+  currentRecord = r;
+  currentType = 'vendo';
   var statusCls = r.status === 'Active' ? 'badge-active' : 'badge-inactive';
   var html = '<span class="modal-badge ' + statusCls + '">' + esc(r.status) + '</span>';
   html += detailRow('Vendo Name', r.vendo_name, false);
@@ -365,6 +395,8 @@ function openVendoDetail(idx) {
 
 function openSubsDetail(idx) {
   var r = filteredSubs[idx];
+  currentRecord = r;
+  currentType = 'subs';
   var name = [r.first_name, r.middle_name, r.last_name].filter(Boolean).join(' ').trim();
   var statusCls = r.account_status === 'Active' ? 'badge-active' : 'badge-inactive';
   var html = '<span class="modal-badge ' + statusCls + '">' + esc(r.account_status) + '</span>';
@@ -577,6 +609,57 @@ function saveSubs() {
   });
 }
 
+function showConfirm(msg, onConfirm) {
+  document.getElementById('confirm-msg').textContent = msg;
+  document.getElementById('confirm-overlay').style.display = 'flex';
+  var btn = document.getElementById('confirm-del-btn');
+  btn.onclick = function() {
+    document.getElementById('confirm-overlay').style.display = 'none';
+    onConfirm();
+  };
+}
+
+function deleteCurrentRecord() {
+  if (!currentRecord || !currentType) return;
+  var label = currentType === 'vendo'
+    ? (currentRecord.vendo_name || 'this vendo')
+    : ([currentRecord.first_name, currentRecord.last_name].filter(Boolean).join(' ') || 'this subscriber');
+
+  showConfirm('Delete "' + label + '"? This cannot be undone.', function() {
+    if (currentType === 'vendo') {
+      var id = currentRecord.vendo_id;
+      fetch(SUPABASE_URL + '/rest/v1/peso_wifi_vendo?vendo_id=eq.' + id, {
+        method: 'DELETE', headers: sbHeaders()
+      }).then(function(r) {
+        if (!r.ok) throw new Error('Delete failed');
+        localVendo = localVendo.filter(function(x){ return x.vendo_id !== id; });
+        filteredVendo = filteredVendo.filter(function(x){ return x.vendo_id !== id; });
+        renderVendo(filteredVendo);
+        updateStats();
+        document.getElementById('detail-modal').style.display = 'none';
+      }).catch(function(e){ alert('Error: ' + e.message); });
+    } else {
+      var custId = currentRecord.customer_id;
+      var accId = currentRecord.account_id;
+      fetch(SUPABASE_URL + '/rest/v1/customer_accounts?account_id=eq.' + accId, {
+        method: 'DELETE', headers: sbHeaders()
+      }).then(function(r) {
+        if (!r.ok) throw new Error('Account delete failed');
+        return fetch(SUPABASE_URL + '/rest/v1/customer?customer_id=eq.' + custId, {
+          method: 'DELETE', headers: sbHeaders()
+        });
+      }).then(function(r) {
+        if (!r.ok) throw new Error('Customer delete failed');
+        localSubs = localSubs.filter(function(x){ return x.account_id !== accId; });
+        filteredSubs = filteredSubs.filter(function(x){ return x.account_id !== accId; });
+        renderSubs(filteredSubs);
+        updateStats();
+        document.getElementById('detail-modal').style.display = 'none';
+      }).catch(function(e){ alert('Error: ' + e.message); });
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   filteredVendo = localVendo.slice();
   filteredSubs = localSubs.slice();
@@ -629,6 +712,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('subs-add-btn').addEventListener('click', function(){ document.getElementById('subs-form-modal').style.display='flex'; });
   document.getElementById('vendo-save-btn').addEventListener('click', saveVendo);
   document.getElementById('subs-save-btn').addEventListener('click', saveSubs);
+  document.getElementById('detail-delete-btn').addEventListener('click', deleteCurrentRecord);
   document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ document.getElementById('detail-modal').style.display='none'; document.getElementById('vendo-form-modal').style.display='none'; document.getElementById('subs-form-modal').style.display='none'; } });
 });
 </script>
