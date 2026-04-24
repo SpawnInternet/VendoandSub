@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPAWN INTERNET — Data Report</title>
+<script src="data.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f4f8; color: #1a202c; }
+  #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1e3a5f 0%, #2a5298 100%); }
+  .login-card { background: #fff; border-radius: 16px; padding: 2.5rem 2rem; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+  .login-logo { text-align: center; margin-bottom: 1.5rem; }
+  .login-logo h1 { font-size: 22px; font-weight: 800; color: #1e3a5f; }
+  .login-logo p { font-size: 12px; color: #a0aec0; margin-top: 4px; }
+  .login-card label { font-size: 12px; color: #718096; display: block; margin-bottom: 4px; margin-top: 14px; font-weight: 600; text-transform: uppercase; }
+  .login-card input { width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; }
+  .login-card input:focus { border-color: #2a5298; }
+  .login-btn { width: 100%; margin-top: 1.5rem; padding: 12px; background: #1e3a5f; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .login-btn:hover { background: #2a5298; }
+  .login-error { color: #e53e3e; font-size: 13px; text-align: center; margin-top: 10px; display: none; }
+  #app-screen { display: none; }
+  header { background: #1e3a5f; color: #fff; padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+  header h1 { font-size: 20px; font-weight: 700; }
+  header p { font-size: 12px; opacity: 0.6; margin-top: 2px; }
+  .logout-btn { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .user-info { font-size: 12px; opacity: 0.7; margin-bottom: 4px; }
+  .main { padding: 1.5rem 2rem; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+  .stat { background: #fff; border-radius: 10px; padding: 1rem 1.25rem; border: 1px solid #e2e8f0; }
+  .stat-label { font-size: 11px; color: #718096; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .stat-val { font-size: 28px; font-weight: 700; color: #1e3a5f; }
+  .stat-sub { font-size: 12px; color: #a0aec0; margin-top: 2px; }
+  .tabs { display: flex; gap: 4px; }
+  .tab { padding: 10px 24px; border-radius: 8px 8px 0 0; border: 1px solid #e2e8f0; border-bottom: none; background: #e2e8f0; cursor: pointer; font-size: 14px; font-weight: 600; color: #4a5568; }
+  .tab.active { background: #fff; color: #1e3a5f; }
+  .panel { background: #fff; border-radius: 0 10px 10px 10px; border: 1px solid #e2e8f0; padding: 1.25rem; }
+  .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
+  .toolbar input { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; width: 260px; }
+  .toolbar select { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; background: #fff; }
+  .count-label { font-size: 13px; color: #718096; margin-left: auto; }
+  .tbl-wrap { overflow-x: auto; max-height: 520px; overflow-y: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { background: #1e3a5f; color: #fff; padding: 10px 12px; text-align: left; position: sticky; top: 0; z-index: 2; white-space: nowrap; font-weight: 600; }
+  tbody tr { border-bottom: 1px solid #f0f4f8; }
+  tbody tr:hover { background: #f7fafc; }
+  tbody td { padding: 9px 12px; vertical-align: middle; white-space: nowrap; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-active { background: #c6f6d5; color: #276749; }
+  .badge-inactive { background: #fed7d7; color: #9b2c2c; }
+  .gps-link { color: #2b6cb0; text-decoration: none; font-size: 12px; }
+  .gps-link:hover { text-decoration: underline; }
+  .no-results { text-align: center; color: #a0aec0; padding: 2rem; font-size: 14px; }
+  .btn-export { padding: 7px 14px; background: #276749; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .copy-btn { background: #edf2f7; color: #4a5568; border: 1px solid #e2e8f0; padding: 3px 9px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; margin-left: 6px; }
+  .copy-btn.copied { background: #c6f6d5; color: #276749; border-color: #9ae6b4; }
+  .cell-wrap { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <h1>SPAWN INTERNET</h1>
+      <p>Data Report Portal</p>
+    </div>
+    <label>Username</label>
+    <input type="text" id="inp-user" placeholder="Enter username" />
+    <label>Password</label>
+    <input type="password" id="inp-pass" placeholder="Enter password" />
+    <button class="login-btn" id="login-btn">Login</button>
+    <div class="login-error" id="login-error">Invalid username or password.</div>
+  </div>
+</div>
+
+<div id="app-screen">
+  <header>
+    <div>
+      <div class="user-info" id="user-info"></div>
+      <h1>SPAWN INTERNET</h1>
+      <p>Vendo &amp; Subscriber Data Report</p>
+    </div>
+    <button class="logout-btn" id="logout-btn">Logout</button>
+  </header>
+  <div class="main">
+    <div class="stats-grid">
+      <div class="stat"><div class="stat-label">Total Vendos</div><div class="stat-val">856</div><div class="stat-sub">853 Active &bull; 3 Inactive</div></div>
+      <div class="stat"><div class="stat-label">Total Subscribers</div><div class="stat-val">318</div><div class="stat-sub">313 Active &bull; 5 Inactive</div></div>
+      <div class="stat"><div class="stat-label">Active Vendos</div><div class="stat-val" style="color:#276749">853</div><div class="stat-sub">99.6% uptime</div></div>
+      <div class="stat"><div class="stat-label">Active Subscribers</div><div class="stat-val" style="color:#276749">313</div><div class="stat-sub">98.4% retention</div></div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" id="tab-btn-vendo">&#127975; Vendo Machines</div>
+      <div class="tab" id="tab-btn-subs">&#128101; Subscribers</div>
+    </div>
+    <div class="panel" id="tab-vendo">
+      <div class="toolbar">
+        <input type="text" id="vendo-search" placeholder="Search vendo name, host, address..." />
+        <select id="vendo-status">
+          <option value="">All Status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+        <button class="btn-export" id="vendo-export">Export CSV</button>
+        <span class="count-label" id="vendo-count">856 records</span>
+      </div>
+      <div class="tbl-wrap">
+        <table><thead><tr>
+          <th>#</th><th>Vendo Name</th><th>Host</th><th>Contact</th><th>Address</th><th>GPS</th><th>Date Installed</th><th>Last Maintenance</th><th>Status</th>
+        </tr></thead><tbody id="vendo-body"></tbody></table>
+      </div>
+    </div>
+    <div class="panel" id="tab-subs" style="display:none;">
+      <div class="toolbar">
+        <input type="text" id="subs-search" placeholder="Search name, address, phone, email..." />
+        <select id="subs-status">
+          <option value="">All Status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+        <button class="btn-export" id="subs-export">Export CSV</button>
+        <span class="count-label" id="subs-count">318 records</span>
+      </div>
+      <div class="tbl-wrap">
+        <table><thead><tr>
+          <th>#</th><th>Account No.</th><th>Full Name</th><th>Phone</th><th>Email / FB</th><th>Address</th><th>Plan ID</th><th>Date Activated</th><th>Date Registered</th><th>Status</th>
+        </tr></thead><tbody id="subs-body"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var USERS = {"admin": "1"};
+var filteredVendo = [];
+var filteredSubs = [];
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function badge(s) {
+  var cls = s === 'Active' ? 'badge-active' : 'badge-inactive';
+  return '<span class="badge ' + cls + '">' + esc(s || 'Unknown') + '</span>';
+}
+
+function mkCopy(val) {
+  if (!val) return '';
+  return '<button class="copy-btn" onclick="doCopy(this)">' + esc(val) + '</button>';
+}
+
+function doCopy(btn) {
+  var text = btn.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.textContent = text;
+      btn.classList.remove('copied');
+    }, 1500);
+  });
+}
+
+function textCell(val) {
+  if (!val) return '&mdash;';
+  return '<div class="cell-wrap"><span>' + esc(val) + '</span>' + mkCopy(val) + '</div>';
+}
+
+function gpsCell(gps) {
+  if (!gps) return '&mdash;';
+  var parts = gps.split(',');
+  var link = parts.length === 2
+    ? '<a class="gps-link" href="https://maps.google.com/?q=' + encodeURIComponent(gps) + '" target="_blank">&#128205; ' + esc(gps) + '</a>'
+    : esc(gps);
+  return '<div class="cell-wrap">' + link + mkCopy(gps) + '</div>';
+}
+
+function renderVendo(data) {
+  var tbody = document.getElementById('vendo-body');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="9" class="no-results">No records found</td></tr>'; return; }
+  var rows = '';
+  for (var i = 0; i < data.length; i++) {
+    var r = data[i];
+    rows += '<tr>' +
+      '<td style="color:#a0aec0">' + (i+1) + '</td>' +
+      '<td style="font-weight:600;color:#1e3a5f;white-space:normal">' + esc(r.vendo_name) + '</td>' +
+      '<td>' + textCell(r.host) + '</td>' +
+      '<td>' + textCell(r.contact_number) + '</td>' +
+      '<td style="white-space:normal;max-width:200px">' + esc(r.address_installed) + '</td>' +
+      '<td>' + gpsCell(r.gps) + '</td>' +
+      '<td>' + esc(r.date_installed) + '</td>' +
+      '<td>' + esc(r.last_maintenance) + '</td>' +
+      '<td>' + badge(r.status) + '</td>' +
+    '</tr>';
+  }
+  tbody.innerHTML = rows;
+  document.getElementById('vendo-count').textContent = data.length + ' records';
+}
+
+function renderSubs(data) {
+  var tbody = document.getElementById('subs-body');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="10" class="no-results">No records found</td></tr>'; return; }
+  var rows = '';
+  for (var i = 0; i < data.length; i++) {
+    var r = data[i];
+    var name = [r.first_name, r.middle_name, r.last_name].filter(Boolean).join(' ').trim();
+    rows += '<tr>' +
+      '<td style="color:#a0aec0">' + (i+1) + '</td>' +
+      '<td style="font-weight:600">' + esc(r.account_number) + '</td>' +
+      '<td style="white-space:normal">' + textCell(name) + '</td>' +
+      '<td>' + textCell(r.phone_number) + '</td>' +
+      '<td style="white-space:normal;max-width:180px">' + textCell(r.email) + '</td>' +
+      '<td style="white-space:normal;max-width:180px">' + esc(r.address) + '</td>' +
+      '<td>' + esc(r.plan_id) + '</td>' +
+      '<td>' + esc(r.date_activated) + '</td>' +
+      '<td>' + esc(r.date_registered) + '</td>' +
+      '<td>' + badge(r.account_status) + '</td>' +
+    '</tr>';
+  }
+  tbody.innerHTML = rows;
+  document.getElementById('subs-count').textContent = data.length + ' records';
+}
+
+function filterVendo() {
+  var q = document.getElementById('vendo-search').value.toLowerCase();
+  var st = document.getElementById('vendo-status').value;
+  filteredVendo = vendoData.filter(function(r) {
+    var match = !q || [r.vendo_name,r.host,r.contact_number,r.address_installed].join(' ').toLowerCase().indexOf(q) >= 0;
+    return match && (!st || r.status === st);
+  });
+  renderVendo(filteredVendo);
+}
+
+function filterSubs() {
+  var q = document.getElementById('subs-search').value.toLowerCase();
+  var st = document.getElementById('subs-status').value;
+  filteredSubs = subsData.filter(function(r) {
+    var name = [r.first_name, r.middle_name, r.last_name].join(' ');
+    var match = !q || [name,r.phone_number,r.email,r.address,r.account_number].join(' ').toLowerCase().indexOf(q) >= 0;
+    return match && (!st || r.account_status === st);
+  });
+  renderSubs(filteredSubs);
+}
+
+function exportCSV(type) {
+  var data = type === 'vendo' ? filteredVendo : filteredSubs;
+  if (!data.length) return;
+  var keys = Object.keys(data[0]);
+  var rows = [keys.join(',')];
+  for (var i = 0; i < data.length; i++) {
+    rows.push(keys.map(function(k) { return JSON.stringify(data[i][k] || ''); }).join(','));
+  }
+  var blob = new Blob([rows.join('\n')], {type:'text/csv'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'SPAWN_INTERNET_' + type + '_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  filteredVendo = vendoData.slice();
+  filteredSubs = subsData.slice();
+
+  document.getElementById('login-btn').addEventListener('click', function() {
+    var u = document.getElementById('inp-user').value.trim();
+    var p = document.getElementById('inp-pass').value;
+    if (USERS[u] !== undefined && USERS[u] === p) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app-screen').style.display = 'block';
+      document.getElementById('user-info').textContent = 'Logged in as: ' + u;
+      document.getElementById('login-error').style.display = 'none';
+      renderVendo(vendoData);
+      renderSubs(subsData);
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+      document.getElementById('inp-pass').value = '';
+      document.getElementById('inp-pass').focus();
+    }
+  });
+
+  document.getElementById('inp-pass').addEventListener('keydown', function(e) { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
+  document.getElementById('inp-user').addEventListener('keydown', function(e) { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
+
+  document.getElementById('logout-btn').addEventListener('click', function() {
+    document.getElementById('app-screen').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('inp-user').value = '';
+    document.getElementById('inp-pass').value = '';
+  });
+
+  document.getElementById('tab-btn-vendo').addEventListener('click', function() {
+    document.getElementById('tab-vendo').style.display = '';
+    document.getElementById('tab-subs').style.display = 'none';
+    document.getElementById('tab-btn-vendo').classList.add('active');
+    document.getElementById('tab-btn-subs').classList.remove('active');
+  });
+
+  document.getElementById('tab-btn-subs').addEventListener('click', function() {
+    document.getElementById('tab-subs').style.display = '';
+    document.getElementById('tab-vendo').style.display = 'none';
+    document.getElementById('tab-btn-subs').classList.add('active');
+    document.getElementById('tab-btn-vendo').classList.remove('active');
+  });
+
+  document.getElementById('vendo-search').addEventListener('input', filterVendo);
+  document.getElementById('vendo-status').addEventListener('change', filterVendo);
+  document.getElementById('subs-search').addEventListener('input', filterSubs);
+  document.getElementById('subs-status').addEventListener('change', filterSubs);
+  document.getElementById('vendo-export').addEventListener('click', function() { exportCSV('vendo'); });
+  document.getElementById('subs-export').addEventListener('click', function() { exportCSV('subs'); });
+});
+</script>
+</body>
+</html>
