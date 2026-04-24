@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SPAWN INTERNET — Data Report</title>
-<script src="data.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; background: #f0f4f8; color: #1a202c; }
@@ -52,6 +51,8 @@
   .btn-export { padding: 7px 14px; background: #276749; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
   .btn-add { padding: 7px 14px; background: #2a5298; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
   .hint { font-size: 12px; color: #a0aec0; font-style: italic; }
+  .loading { text-align: center; color: #718096; padding: 2rem; font-size: 14px; }
+  .load-err { text-align: center; color: #e53e3e; padding: 2rem; font-size: 13px; }
 
   /* MODAL */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem; }
@@ -70,9 +71,12 @@
   .gps-link { color: #2b6cb0; text-decoration: none; font-size: 13px; }
   .gps-link:hover { text-decoration: underline; }
   .modal-badge { display: inline-block; padding: 3px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 1rem; }
-  .modal-footer { display: flex; justify-content: flex-end; padding: 1rem 1.5rem; border-top: 1px solid #f0f4f8; }
+  .modal-footer { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-top: 1px solid #f0f4f8; gap: 10px; }
   .btn-delete { padding: 9px 20px; background: #fff; color: #e53e3e; border: 1.5px solid #e53e3e; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
   .btn-delete:hover { background: #fff5f5; }
+  .btn-copy-all { padding: 9px 22px; background: #1e3a5f; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+  .btn-copy-all:hover { background: #2a5298; }
+  .btn-copy-all.copied { background: #276749; }
   .confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 200; }
   .confirm-box { background: #fff; border-radius: 14px; padding: 2rem; max-width: 360px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
   .confirm-box h3 { font-size: 17px; color: #1a202c; margin-bottom: 0.5rem; }
@@ -122,10 +126,10 @@
   </header>
   <div class="main">
     <div class="stats-grid">
-      <div class="stat"><div class="stat-label">Total Vendos</div><div class="stat-val" id="stat-vendo-total">856</div><div class="stat-sub" id="stat-vendo-sub">853 Active &bull; 3 Inactive</div></div>
-      <div class="stat"><div class="stat-label">Total Subscribers</div><div class="stat-val" id="stat-subs-total">318</div><div class="stat-sub" id="stat-subs-sub">313 Active &bull; 5 Inactive</div></div>
-      <div class="stat"><div class="stat-label">Active Vendos</div><div class="stat-val" id="stat-vendo-active" style="color:#276749">853</div><div class="stat-sub">uptime</div></div>
-      <div class="stat"><div class="stat-label">Active Subscribers</div><div class="stat-val" id="stat-subs-active" style="color:#276749">313</div><div class="stat-sub">retention</div></div>
+      <div class="stat"><div class="stat-label">Total Vendos</div><div class="stat-val" id="stat-vendo-total">—</div><div class="stat-sub" id="stat-vendo-sub">Loading...</div></div>
+      <div class="stat"><div class="stat-label">Total Subscribers</div><div class="stat-val" id="stat-subs-total">—</div><div class="stat-sub" id="stat-subs-sub">Loading...</div></div>
+      <div class="stat"><div class="stat-label">Active Vendos</div><div class="stat-val" id="stat-vendo-active" style="color:#276749">—</div><div class="stat-sub">uptime</div></div>
+      <div class="stat"><div class="stat-label">Active Subscribers</div><div class="stat-val" id="stat-subs-active" style="color:#276749">—</div><div class="stat-sub">retention</div></div>
     </div>
     <div class="tabs">
       <div class="tab active" id="tab-btn-vendo">&#127975; Vendo Machines</div>
@@ -142,13 +146,13 @@
         </select>
         <button class="btn-add" id="vendo-add-btn">+ Add Vendo</button>
         <button class="btn-export" id="vendo-export">Export CSV</button>
-        <span class="count-label" id="vendo-count">856 records</span>
+        <span class="count-label" id="vendo-count">—</span>
       </div>
       <div style="margin-bottom:10px;"><span class="hint">&#128161; Click any row to view full details</span></div>
       <div class="tbl-wrap">
         <table><thead><tr>
           <th>#</th><th>Vendo Name</th><th>Host</th><th>Contact</th><th>Address</th><th>Status</th>
-        </tr></thead><tbody id="vendo-body"></tbody></table>
+        </tr></thead><tbody id="vendo-body"><tr><td colspan="6" class="loading">&#8987; Loading data from Supabase...</td></tr></tbody></table>
       </div>
     </div>
 
@@ -162,13 +166,13 @@
         </select>
         <button class="btn-add" id="subs-add-btn">+ Add Subscriber</button>
         <button class="btn-export" id="subs-export">Export CSV</button>
-        <span class="count-label" id="subs-count">318 records</span>
+        <span class="count-label" id="subs-count">—</span>
       </div>
       <div style="margin-bottom:10px;"><span class="hint">&#128161; Click any row to view full details</span></div>
       <div class="tbl-wrap">
         <table><thead><tr>
           <th>#</th><th>Account No.</th><th>Full Name</th><th>Phone</th><th>Address</th><th>Status</th>
-        </tr></thead><tbody id="subs-body"></tbody></table>
+        </tr></thead><tbody id="subs-body"><tr><td colspan="6" class="loading">&#8987; Loading data from Supabase...</td></tr></tbody></table>
       </div>
     </div>
   </div>
@@ -184,6 +188,7 @@
     <div class="modal-body" id="modal-body"></div>
     <div class="modal-footer">
       <button class="btn-delete" id="detail-delete-btn">&#128465; Delete Record</button>
+      <button class="btn-copy-all" id="detail-copy-all-btn">&#128203; Copy All</button>
     </div>
   </div>
 </div>
@@ -228,6 +233,10 @@
         <div>
           <label class="lbl">GPS Coordinates</label>
           <input class="inp" id="f-vendo-gps" placeholder="e.g. 8.7025, 123.3905" />
+        </div>
+        <div>
+          <label class="lbl">VLAN</label>
+          <input class="inp" id="f-vendo-vlan" placeholder="e.g. 100" />
         </div>
         <div>
           <label class="lbl">Date Installed</label>
@@ -300,6 +309,10 @@
           <input class="inp" id="f-sub-accnum" placeholder="e.g. 202509-0001" />
         </div>
         <div>
+          <label class="lbl">VLAN</label>
+          <input class="inp" id="f-sub-vlan" placeholder="e.g. 200" />
+        </div>
+        <div>
           <label class="lbl">Account Status</label>
           <select class="inp" id="f-sub-status">
             <option value="Active">Active</option>
@@ -325,43 +338,81 @@
 </div>
 
 <script>
-var USERS = {"admin": "1"};
+var USERS = { "admin": "1" };
 var SUPABASE_URL = "https://njfmlwigqnamvqxhitxt.supabase.co";
 var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qZm1sd2lncW5hbXZxeGhpdHh0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NzA1MzY3NywiZXhwIjoyMDgyNjI5Njc3fQ.ZSC_wVGU8O6bPWefpwUR0HxeHudqpedrjnTPJDJVgpg";
 
-var localVendo = vendoData.slice();
-var localSubs = subsData.slice();
-var filteredVendo = localVendo.slice();
-var filteredSubs = localSubs.slice();
+var localVendo = [];
+var localSubs = [];
+var filteredVendo = [];
+var filteredSubs = [];
 var currentRecord = null;
 var currentType = null;
 
+function sbHeaders() {
+  return {
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_KEY,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+}
+
+/* ── LOAD FROM SUPABASE ── */
+function loadAllData() {
+  // Load vendos
+  fetch(SUPABASE_URL + '/rest/v1/peso_wifi_vendo?select=*&order=vendo_name.asc&limit=5000', { headers: sbHeaders() })
+  .then(function(r) { if (!r.ok) throw new Error('Vendo fetch failed'); return r.json(); })
+  .then(function(data) {
+    localVendo = data;
+    filteredVendo = data.slice();
+    renderVendo(filteredVendo);
+    updateStats();
+  }).catch(function(e) {
+    document.getElementById('vendo-body').innerHTML = '<tr><td colspan="6" class="load-err">&#9888; Failed to load vendos: ' + e.message + '</td></tr>';
+  });
+
+  // Load subscribers — join customer + customer_accounts
+  fetch(SUPABASE_URL + '/rest/v1/customer_accounts?select=*,customer(*)&order=account_number.asc&limit=5000', { headers: sbHeaders() })
+  .then(function(r) { if (!r.ok) throw new Error('Subscriber fetch failed'); return r.json(); })
+  .then(function(data) {
+    // Flatten nested customer object into the account row
+    localSubs = data.map(function(row) {
+      var cust = row.customer || {};
+      var flat = Object.assign({}, cust, row);
+      delete flat.customer;
+      return flat;
+    });
+    filteredSubs = localSubs.slice();
+    renderSubs(filteredSubs);
+    updateStats();
+  }).catch(function(e) {
+    document.getElementById('subs-body').innerHTML = '<tr><td colspan="6" class="load-err">&#9888; Failed to load subscribers: ' + e.message + '</td></tr>';
+  });
+}
+
+/* ── HELPERS ── */
 function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
 function badge(s) {
-  var cls = s === 'Active' ? 'badge-active' : 'badge-inactive';
+  var cls = (s === 'Active') ? 'badge-active' : 'badge-inactive';
   return '<span class="badge ' + cls + '">' + esc(s || 'Unknown') + '</span>';
 }
-
 function doCopy(btn) {
   var text = btn.getAttribute('data-val');
   navigator.clipboard.writeText(text).then(function() {
     var orig = btn.textContent;
-    btn.textContent = 'Copied!';
-    btn.classList.add('copied');
+    btn.textContent = 'Copied!'; btn.classList.add('copied');
     setTimeout(function() { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
   });
 }
-
 function detailRow(label, value, copyable) {
-  if (!value) return '';
+  if (!value && value !== 0) return '';
   var cp = copyable ? '<button class="copy-btn" data-val="' + esc(value) + '" onclick="doCopy(this)">Copy</button>' : '';
   return '<div class="detail-row"><span class="detail-label">' + label + '</span><span class="detail-value">' + esc(value) + cp + '</span></div>';
 }
-
 function gpsRow(gps) {
   if (!gps) return '';
   var parts = gps.split(',');
@@ -370,15 +421,63 @@ function gpsRow(gps) {
     : esc(gps);
   return '<div class="detail-row"><span class="detail-label">GPS</span><span class="detail-value">' + link + '<button class="copy-btn" data-val="' + esc(gps) + '" onclick="doCopy(this)">Copy</button></span></div>';
 }
-
 function closeModal(id, e) {
   if (e.target === document.getElementById(id)) document.getElementById(id).style.display = 'none';
 }
 
+/* ── COPY ALL ── */
+function buildVendoCopyText(r) {
+  var lines = ['=== VENDO DETAILS ==='];
+  if (r.vendo_name)        lines.push('Vendo Name     : ' + r.vendo_name);
+  if (r.status)            lines.push('Status         : ' + r.status);
+  if (r.host)              lines.push('Host           : ' + r.host);
+  if (r.contact_number)    lines.push('Contact        : ' + r.contact_number);
+  if (r.address_installed) lines.push('Address        : ' + r.address_installed);
+  if (r.gps)               lines.push('GPS            : ' + r.gps);
+  if (r.vlan)              lines.push('VLAN           : ' + r.vlan);
+  if (r.date_installed)    lines.push('Date Installed : ' + r.date_installed);
+  if (r.last_maintenance)  lines.push('Last Maint.    : ' + r.last_maintenance);
+  return lines.join('\n');
+}
+function buildSubsCopyText(r) {
+  var name = [r.first_name, r.middle_name, r.last_name].filter(Boolean).join(' ').trim();
+  var lines = ['=== SUBSCRIBER DETAILS ==='];
+  if (name)               lines.push('Full Name      : ' + name);
+  if (r.account_status)   lines.push('Status         : ' + r.account_status);
+  if (r.account_number)   lines.push('Account No.    : ' + r.account_number);
+  if (r.phone_number)     lines.push('Phone          : ' + r.phone_number);
+  if (r.email)            lines.push('Email / FB     : ' + r.email);
+  if (r.address)          lines.push('Address        : ' + r.address);
+  if (r.plan_id)          lines.push('Plan ID        : ' + r.plan_id);
+  if (r.vlan)             lines.push('VLAN           : ' + r.vlan);
+  if (r.birthday)         lines.push('Birthday       : ' + r.birthday);
+  if (r.date_activated)   lines.push('Date Activated : ' + r.date_activated);
+  if (r.date_registered)  lines.push('Date Registered: ' + r.date_registered);
+  return lines.join('\n');
+}
+function copyAllDetails() {
+  if (!currentRecord || !currentType) return;
+  var text = currentType === 'vendo' ? buildVendoCopyText(currentRecord) : buildSubsCopyText(currentRecord);
+  var btn = document.getElementById('detail-copy-all-btn');
+  var doSuccess = function() {
+    btn.textContent = '✓ Copied!'; btn.classList.add('copied');
+    setTimeout(function() { btn.innerHTML = '&#128203; Copy All'; btn.classList.remove('copied'); }, 2000);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(doSuccess).catch(function() { fallbackCopy(text, doSuccess); });
+  } else { fallbackCopy(text, doSuccess); }
+}
+function fallbackCopy(text, cb) {
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+  document.body.removeChild(ta); cb();
+}
+
+/* ── OPEN DETAIL MODALS ── */
 function openVendoDetail(idx) {
   var r = filteredVendo[idx];
-  currentRecord = r;
-  currentType = 'vendo';
+  currentRecord = r; currentType = 'vendo';
   var statusCls = r.status === 'Active' ? 'badge-active' : 'badge-inactive';
   var html = '<span class="modal-badge ' + statusCls + '">' + esc(r.status) + '</span>';
   html += detailRow('Vendo Name', r.vendo_name, false);
@@ -386,17 +485,18 @@ function openVendoDetail(idx) {
   html += detailRow('Contact', r.contact_number, true);
   html += detailRow('Address', r.address_installed, true);
   html += gpsRow(r.gps);
+  html += detailRow('VLAN', r.vlan, true);
   html += detailRow('Date Installed', r.date_installed, false);
   html += detailRow('Last Maintenance', r.last_maintenance, false);
   document.getElementById('modal-title').textContent = r.vendo_name || 'Vendo Details';
   document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('detail-copy-all-btn').innerHTML = '&#128203; Copy All';
+  document.getElementById('detail-copy-all-btn').classList.remove('copied');
   document.getElementById('detail-modal').style.display = 'flex';
 }
-
 function openSubsDetail(idx) {
   var r = filteredSubs[idx];
-  currentRecord = r;
-  currentType = 'subs';
+  currentRecord = r; currentType = 'subs';
   var name = [r.first_name, r.middle_name, r.last_name].filter(Boolean).join(' ').trim();
   var statusCls = r.account_status === 'Active' ? 'badge-active' : 'badge-inactive';
   var html = '<span class="modal-badge ' + statusCls + '">' + esc(r.account_status) + '</span>';
@@ -406,13 +506,18 @@ function openSubsDetail(idx) {
   html += detailRow('Email / FB', r.email, true);
   html += detailRow('Address', r.address, true);
   html += detailRow('Plan ID', r.plan_id, false);
+  html += detailRow('VLAN', r.vlan, true);
+  html += detailRow('Birthday', r.birthday, false);
   html += detailRow('Date Activated', r.date_activated, false);
   html += detailRow('Date Registered', r.date_registered, false);
   document.getElementById('modal-title').textContent = name || 'Subscriber Details';
   document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('detail-copy-all-btn').innerHTML = '&#128203; Copy All';
+  document.getElementById('detail-copy-all-btn').classList.remove('copied');
   document.getElementById('detail-modal').style.display = 'flex';
 }
 
+/* ── STATS / RENDER / FILTER ── */
 function updateStats() {
   var va = localVendo.filter(function(r){ return r.status === 'Active'; }).length;
   var vi = localVendo.length - va;
@@ -425,7 +530,6 @@ function updateStats() {
   document.getElementById('stat-subs-sub').textContent = sa + ' Active \u2022 ' + si + ' Inactive';
   document.getElementById('stat-subs-active').textContent = sa;
 }
-
 function renderVendo(data) {
   var tbody = document.getElementById('vendo-body');
   if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="no-results">No records found</td></tr>'; return; }
@@ -438,13 +542,11 @@ function renderVendo(data) {
       '<td>' + esc(r.host) + '</td>' +
       '<td>' + esc(r.contact_number) + '</td>' +
       '<td>' + esc(r.address_installed) + '</td>' +
-      '<td>' + badge(r.status) + '</td>' +
-    '</tr>';
+      '<td>' + badge(r.status) + '</td></tr>';
   }
   tbody.innerHTML = rows;
   document.getElementById('vendo-count').textContent = data.length + ' records';
 }
-
 function renderSubs(data) {
   var tbody = document.getElementById('subs-body');
   if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="no-results">No records found</td></tr>'; return; }
@@ -458,13 +560,11 @@ function renderSubs(data) {
       '<td>' + esc(name) + '</td>' +
       '<td>' + esc(r.phone_number) + '</td>' +
       '<td>' + esc(r.address) + '</td>' +
-      '<td>' + badge(r.account_status) + '</td>' +
-    '</tr>';
+      '<td>' + badge(r.account_status) + '</td></tr>';
   }
   tbody.innerHTML = rows;
   document.getElementById('subs-count').textContent = data.length + ' records';
 }
-
 function filterVendo() {
   var q = document.getElementById('vendo-search').value.toLowerCase();
   var st = document.getElementById('vendo-status').value;
@@ -474,7 +574,6 @@ function filterVendo() {
   });
   renderVendo(filteredVendo);
 }
-
 function filterSubs() {
   var q = document.getElementById('subs-search').value.toLowerCase();
   var st = document.getElementById('subs-status').value;
@@ -485,14 +584,13 @@ function filterSubs() {
   });
   renderSubs(filteredSubs);
 }
-
 function exportCSV(type) {
   var data = type === 'vendo' ? filteredVendo : filteredSubs;
   if (!data.length) return;
   var keys = Object.keys(data[0]);
   var rows = [keys.join(',')];
   for (var i = 0; i < data.length; i++) {
-    rows.push(keys.map(function(k) { return JSON.stringify(data[i][k] || ''); }).join(','));
+    rows.push(keys.map(function(k){ return JSON.stringify(data[i][k] != null ? data[i][k] : ''); }).join(','));
   }
   var blob = new Blob([rows.join('\n')], {type:'text/csv'});
   var a = document.createElement('a');
@@ -501,169 +599,120 @@ function exportCSV(type) {
   a.click();
 }
 
-function sbHeaders() {
-  return { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
-}
-
+/* ── SAVE VENDO ── */
 function saveVendo() {
   var name = document.getElementById('f-vendo-name').value.trim();
   var host = document.getElementById('f-vendo-host').value.trim();
   var contact = document.getElementById('f-vendo-contact').value.trim();
   var address = document.getElementById('f-vendo-address').value.trim();
   if (!name || !host || !contact || !address) { alert('Please fill in all required fields (*).'); return; }
-
   var btn = document.getElementById('vendo-save-btn');
   var msg = document.getElementById('vendo-save-msg');
-  btn.disabled = true; btn.textContent = 'Saving...';
-  msg.style.display = 'none';
-
+  btn.disabled = true; btn.textContent = 'Saving...'; msg.style.display = 'none';
   var payload = {
-    vendo_name: name,
-    host: host,
-    contact_number: contact,
-    address_installed: address,
+    vendo_name: name, host: host, contact_number: contact, address_installed: address,
     gps: document.getElementById('f-vendo-gps').value.trim() || null,
+    vlan: document.getElementById('f-vendo-vlan').value.trim() || null,
     date_installed: document.getElementById('f-vendo-date').value || null,
     last_maintenance: document.getElementById('f-vendo-maint').value || null,
     status: document.getElementById('f-vendo-status').value
   };
-
-  fetch(SUPABASE_URL + '/rest/v1/peso_wifi_vendo', {
-    method: 'POST', headers: sbHeaders(), body: JSON.stringify(payload)
-  }).then(function(r) {
-    if (!r.ok) throw new Error('Save failed (status ' + r.status + ')');
-    return r.json();
-  }).then(function(saved) {
+  fetch(SUPABASE_URL + '/rest/v1/peso_wifi_vendo', { method: 'POST', headers: sbHeaders(), body: JSON.stringify(payload) })
+  .then(function(r){ if (!r.ok) throw new Error('Save failed (' + r.status + ')'); return r.json(); })
+  .then(function(saved){
     var rec = Array.isArray(saved) ? saved[0] : saved;
-    localVendo.unshift(rec);
-    filteredVendo = localVendo.slice();
-    renderVendo(filteredVendo);
-    updateStats();
-    msg.className = 'save-msg save-ok'; msg.textContent = 'Vendo saved successfully!'; msg.style.display = 'block';
-    ['f-vendo-name','f-vendo-host','f-vendo-contact','f-vendo-address','f-vendo-gps','f-vendo-date','f-vendo-maint'].forEach(function(id){ document.getElementById(id).value = ''; });
+    localVendo.unshift(rec); filteredVendo = localVendo.slice(); renderVendo(filteredVendo); updateStats();
+    msg.className = 'save-msg save-ok'; msg.textContent = 'Vendo saved!'; msg.style.display = 'block';
+    ['f-vendo-name','f-vendo-host','f-vendo-contact','f-vendo-address','f-vendo-gps','f-vendo-vlan','f-vendo-date','f-vendo-maint'].forEach(function(id){ document.getElementById(id).value = ''; });
     setTimeout(function(){ document.getElementById('vendo-form-modal').style.display='none'; msg.style.display='none'; }, 1500);
-  }).catch(function(e) {
-    msg.className = 'save-msg save-err'; msg.textContent = 'Error: ' + e.message; msg.style.display = 'block';
-  }).finally(function() {
-    btn.disabled = false; btn.textContent = 'Save Vendo';
-  });
+  }).catch(function(e){ msg.className='save-msg save-err'; msg.textContent='Error: '+e.message; msg.style.display='block'; })
+  .finally(function(){ btn.disabled=false; btn.textContent='Save Vendo'; });
 }
 
+/* ── SAVE SUBSCRIBER ── */
 function saveSubs() {
   var first = document.getElementById('f-sub-first').value.trim();
   var last = document.getElementById('f-sub-last').value.trim();
   var phone = document.getElementById('f-sub-phone').value.trim();
   var address = document.getElementById('f-sub-address').value.trim();
   if (!first || !last || !phone || !address) { alert('Please fill in all required fields (*).'); return; }
-
   var btn = document.getElementById('subs-save-btn');
   var msg = document.getElementById('subs-save-msg');
-  btn.disabled = true; btn.textContent = 'Saving...';
-  msg.style.display = 'none';
-
+  btn.disabled = true; btn.textContent = 'Saving...'; msg.style.display = 'none';
   var custPayload = {
-    first_name: first,
-    middle_name: document.getElementById('f-sub-middle').value.trim() || null,
-    last_name: last,
-    phone_number: phone,
+    first_name: first, middle_name: document.getElementById('f-sub-middle').value.trim() || null,
+    last_name: last, phone_number: phone,
     email: document.getElementById('f-sub-email').value.trim() || null,
-    address: address,
-    birthday: document.getElementById('f-sub-bday').value || null,
+    address: address, birthday: document.getElementById('f-sub-bday').value || null,
     date_registered: document.getElementById('f-sub-registered').value || null
   };
-
-  fetch(SUPABASE_URL + '/rest/v1/customer', {
-    method: 'POST', headers: sbHeaders(), body: JSON.stringify(custPayload)
-  }).then(function(r) {
-    if (!r.ok) throw new Error('Customer save failed (status ' + r.status + ')');
-    return r.json();
-  }).then(function(saved) {
+  fetch(SUPABASE_URL + '/rest/v1/customer', { method: 'POST', headers: sbHeaders(), body: JSON.stringify(custPayload) })
+  .then(function(r){ if (!r.ok) throw new Error('Customer save failed (' + r.status + ')'); return r.json(); })
+  .then(function(saved){
     var cust = Array.isArray(saved) ? saved[0] : saved;
     var accPayload = {
       customer_id: cust.customer_id || cust.id,
       plan_id: parseInt(document.getElementById('f-sub-plan').value) || null,
       account_number: document.getElementById('f-sub-accnum').value.trim() || null,
+      vlan: document.getElementById('f-sub-vlan').value.trim() || null,
       account_status: document.getElementById('f-sub-status').value,
       date_activated: document.getElementById('f-sub-activated').value || null
     };
-    return fetch(SUPABASE_URL + '/rest/v1/customer_accounts', {
-      method: 'POST', headers: sbHeaders(), body: JSON.stringify(accPayload)
-    }).then(function(r2) {
-      if (!r2.ok) throw new Error('Account save failed (status ' + r2.status + ')');
-      return r2.json();
-    }).then(function(accSaved) {
+    return fetch(SUPABASE_URL + '/rest/v1/customer_accounts', { method: 'POST', headers: sbHeaders(), body: JSON.stringify(accPayload) })
+    .then(function(r2){ if (!r2.ok) throw new Error('Account save failed (' + r2.status + ')'); return r2.json(); })
+    .then(function(accSaved){
       var acc = Array.isArray(accSaved) ? accSaved[0] : accSaved;
       var merged = Object.assign({}, cust, acc);
-      localSubs.unshift(merged);
-      filteredSubs = localSubs.slice();
-      renderSubs(filteredSubs);
-      updateStats();
-      msg.className = 'save-msg save-ok'; msg.textContent = 'Subscriber saved successfully!'; msg.style.display = 'block';
-      ['f-sub-first','f-sub-middle','f-sub-last','f-sub-phone','f-sub-email','f-sub-address','f-sub-bday','f-sub-plan','f-sub-accnum','f-sub-activated','f-sub-registered'].forEach(function(id){ document.getElementById(id).value = ''; });
+      localSubs.unshift(merged); filteredSubs = localSubs.slice(); renderSubs(filteredSubs); updateStats();
+      msg.className='save-msg save-ok'; msg.textContent='Subscriber saved!'; msg.style.display='block';
+      ['f-sub-first','f-sub-middle','f-sub-last','f-sub-phone','f-sub-email','f-sub-address','f-sub-bday','f-sub-plan','f-sub-accnum','f-sub-vlan','f-sub-activated','f-sub-registered'].forEach(function(id){ document.getElementById(id).value=''; });
       setTimeout(function(){ document.getElementById('subs-form-modal').style.display='none'; msg.style.display='none'; }, 1500);
     });
-  }).catch(function(e) {
-    msg.className = 'save-msg save-err'; msg.textContent = 'Error: ' + e.message; msg.style.display = 'block';
-  }).finally(function() {
-    btn.disabled = false; btn.textContent = 'Save Subscriber';
-  });
+  }).catch(function(e){ msg.className='save-msg save-err'; msg.textContent='Error: '+e.message; msg.style.display='block'; })
+  .finally(function(){ btn.disabled=false; btn.textContent='Save Subscriber'; });
 }
 
+/* ── DELETE ── */
 function showConfirm(msg, onConfirm) {
   document.getElementById('confirm-msg').textContent = msg;
   document.getElementById('confirm-overlay').style.display = 'flex';
-  var btn = document.getElementById('confirm-del-btn');
-  btn.onclick = function() {
-    document.getElementById('confirm-overlay').style.display = 'none';
-    onConfirm();
+  document.getElementById('confirm-del-btn').onclick = function() {
+    document.getElementById('confirm-overlay').style.display = 'none'; onConfirm();
   };
 }
-
 function deleteCurrentRecord() {
   if (!currentRecord || !currentType) return;
   var label = currentType === 'vendo'
     ? (currentRecord.vendo_name || 'this vendo')
     : ([currentRecord.first_name, currentRecord.last_name].filter(Boolean).join(' ') || 'this subscriber');
-
   showConfirm('Delete "' + label + '"? This cannot be undone.', function() {
     if (currentType === 'vendo') {
       var id = currentRecord.vendo_id;
-      fetch(SUPABASE_URL + '/rest/v1/peso_wifi_vendo?vendo_id=eq.' + id, {
-        method: 'DELETE', headers: sbHeaders()
-      }).then(function(r) {
-        if (!r.ok) throw new Error('Delete failed');
+      fetch(SUPABASE_URL + '/rest/v1/peso_wifi_vendo?vendo_id=eq.' + id, { method: 'DELETE', headers: sbHeaders() })
+      .then(function(r){ if (!r.ok) throw new Error('Delete failed');
         localVendo = localVendo.filter(function(x){ return x.vendo_id !== id; });
         filteredVendo = filteredVendo.filter(function(x){ return x.vendo_id !== id; });
-        renderVendo(filteredVendo);
-        updateStats();
+        renderVendo(filteredVendo); updateStats();
         document.getElementById('detail-modal').style.display = 'none';
       }).catch(function(e){ alert('Error: ' + e.message); });
     } else {
       var custId = currentRecord.customer_id;
       var accId = currentRecord.account_id;
-      fetch(SUPABASE_URL + '/rest/v1/customer_accounts?account_id=eq.' + accId, {
-        method: 'DELETE', headers: sbHeaders()
-      }).then(function(r) {
-        if (!r.ok) throw new Error('Account delete failed');
-        return fetch(SUPABASE_URL + '/rest/v1/customer?customer_id=eq.' + custId, {
-          method: 'DELETE', headers: sbHeaders()
-        });
-      }).then(function(r) {
-        if (!r.ok) throw new Error('Customer delete failed');
+      fetch(SUPABASE_URL + '/rest/v1/customer_accounts?account_id=eq.' + accId, { method: 'DELETE', headers: sbHeaders() })
+      .then(function(r){ if (!r.ok) throw new Error('Account delete failed');
+        return fetch(SUPABASE_URL + '/rest/v1/customer?customer_id=eq.' + custId, { method: 'DELETE', headers: sbHeaders() });
+      }).then(function(r){ if (!r.ok) throw new Error('Customer delete failed');
         localSubs = localSubs.filter(function(x){ return x.account_id !== accId; });
         filteredSubs = filteredSubs.filter(function(x){ return x.account_id !== accId; });
-        renderSubs(filteredSubs);
-        updateStats();
+        renderSubs(filteredSubs); updateStats();
         document.getElementById('detail-modal').style.display = 'none';
       }).catch(function(e){ alert('Error: ' + e.message); });
     }
   });
 }
 
+/* ── INIT ── */
 document.addEventListener('DOMContentLoaded', function() {
-  filteredVendo = localVendo.slice();
-  filteredSubs = localSubs.slice();
-
   document.getElementById('login-btn').addEventListener('click', function() {
     var u = document.getElementById('inp-user').value.trim();
     var p = document.getElementById('inp-pass').value;
@@ -672,21 +721,19 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('app-screen').style.display = 'block';
       document.getElementById('user-info').textContent = 'Logged in as: ' + u;
       document.getElementById('login-error').style.display = 'none';
-      renderVendo(filteredVendo);
-      renderSubs(filteredSubs);
-      updateStats();
+      loadAllData();
     } else {
       document.getElementById('login-error').style.display = 'block';
       document.getElementById('inp-pass').value = '';
       document.getElementById('inp-pass').focus();
     }
   });
-
   document.getElementById('inp-pass').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('login-btn').click(); });
   document.getElementById('inp-user').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('login-btn').click(); });
   document.getElementById('logout-btn').addEventListener('click', function() {
     document.getElementById('app-screen').style.display = 'none';
     document.getElementById('login-screen').style.display = 'flex';
+    localVendo=[]; localSubs=[]; filteredVendo=[]; filteredSubs=[];
     document.getElementById('inp-user').value = '';
     document.getElementById('inp-pass').value = '';
   });
@@ -713,7 +760,14 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('vendo-save-btn').addEventListener('click', saveVendo);
   document.getElementById('subs-save-btn').addEventListener('click', saveSubs);
   document.getElementById('detail-delete-btn').addEventListener('click', deleteCurrentRecord);
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ document.getElementById('detail-modal').style.display='none'; document.getElementById('vendo-form-modal').style.display='none'; document.getElementById('subs-form-modal').style.display='none'; } });
+  document.getElementById('detail-copy-all-btn').addEventListener('click', copyAllDetails);
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){
+      ['detail-modal','vendo-form-modal','subs-form-modal'].forEach(function(id){
+        document.getElementById(id).style.display='none';
+      });
+    }
+  });
 });
 </script>
 </body>
